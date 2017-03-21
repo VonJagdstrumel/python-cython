@@ -1,7 +1,8 @@
-inherit python-distutils
+ORIG_PN="Cython"
+inherit python-wheel
 
 NAME="python-cython"
-VERSION=0.22
+VERSION=0.25.2
 RELEASE=1
 CATEGORY="Python"
 SUMMARY="C extension language for Python"
@@ -10,5 +11,23 @@ Python language as easy as Python itself. It is based on the well-known Pyrex,
 but supports more cutting edge functionality and optimizations."
 HOMEPAGE="http://www.cython.org/"
 
-SRC_URI="http://pypi.python.org/packages/source/C/Cython/cython-${VERSION}.tar.gz"
-SRC_DIR="Cython-${VERSION}"
+python2_cython_CONTENTS="
+	usr/bin/cygdb
+	usr/bin/cython
+	usr/bin/cythonize
+	${python2_cython_CONTENTS}
+"
+python3_cython_CONTENTS="usr/bin/*3 ${python3_cython_CONTENTS}"
+
+REQUIRES_EXCLUDE_FROM="${PYTHON2_SITELIB}/Cython/Build/IpythonMagic.py:${PYTHON3_SITELIB}/Cython/Build/IpythonMagic.py"
+
+src_install() {
+	cd ${B}
+	python_wheel_install
+
+	cp ${D}/usr/bin/cygdb{,3}
+	cp ${D}/usr/bin/cython{,3}
+	cp ${D}/usr/bin/cythonize{,3}
+
+	python2_fix_shebang ${D}/usr/bin/cygdb ${D}/usr/bin/cython{,ize}
+}
