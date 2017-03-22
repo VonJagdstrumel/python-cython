@@ -18,6 +18,7 @@ python2_cython_CONTENTS="
 	${python2_cython_CONTENTS}
 "
 python3_cython_CONTENTS="usr/bin/*3 ${python3_cython_CONTENTS}"
+python_cython_debuginfo_OBSOLETES="python3-cython-debuginfo"
 
 REQUIRES_EXCLUDE_FROM="${PYTHON2_SITELIB}/Cython/Build/IpythonMagic.py:${PYTHON3_SITELIB}/Cython/Build/IpythonMagic.py"
 
