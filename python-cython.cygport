@@ -2,7 +2,7 @@ ORIG_PN="Cython"
 inherit python-wheel
 
 NAME="python-cython"
-VERSION=0.29.21
+VERSION=0.29.22
 RELEASE=1
 CATEGORY="Python"
 SUMMARY="C extension language for Python"
