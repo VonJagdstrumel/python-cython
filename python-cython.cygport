@@ -2,7 +2,7 @@ ORIG_PN="Cython"
 inherit python-wheel
 
 NAME="python-cython"
-VERSION=0.29.22
+VERSION=0.29.26
 RELEASE=1
 CATEGORY="Python"
 SUMMARY="C extension language for Python"
@@ -11,7 +11,7 @@ Python language as easy as Python itself. It is based on the well-known Pyrex,
 but supports more cutting edge functionality and optimizations."
 HOMEPAGE="http://www.cython.org/"
 
-python39_cython_CONTENTS+="
+python311_cython_CONTENTS+="
 	usr/bin/cygdb
 	usr/bin/cython
 	usr/bin/cythonize
