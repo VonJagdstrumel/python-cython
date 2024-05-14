@@ -2,7 +2,7 @@ ORIG_PN="Cython"
 inherit python-wheel
 
 NAME="python-cython"
-VERSION=0.29.26
+VERSION=3.0.10
 RELEASE=1
 CATEGORY="Python"
 SUMMARY="C extension language for Python"
@@ -12,10 +12,65 @@ but supports more cutting edge functionality and optimizations."
 HOMEPAGE="http://www.cython.org/"
 
 python311_cython_CONTENTS+="
-	usr/bin/cygdb
-	usr/bin/cython
-	usr/bin/cythonize
+	usr/bin/cygdb3.11
+	usr/bin/cython3.11
+	usr/bin/cythonize3.11
+	etc/postinstall/python311-cython.sh
+	etc/preremove/python311-cython.sh
+"
+python313_cython_CONTENTS+="
+	usr/bin/cygdb3.13
+	usr/bin/cython3.13
+	usr/bin/cythonize3.13
+	etc/postinstall/python313-cython.sh
+	etc/preremove/python313-cython.sh
 "
 python_cython_debuginfo_OBSOLETES="python3-cython-debuginfo"
 
 REQUIRES_EXCLUDE_FROM="*/Cython/Build/IpythonMagic.py"
+
+src_install() {
+	cd ${B}
+	python_wheel_install
+
+	for f in cygdb cython cythonize; do
+		# creating versioned info"
+		pushd ${D}/usr/bin
+		for v in ${PYTHON_WHEEL_VERSIONS//:/ }
+		do
+			cp ${f} ${f}${v}
+			sed -i -e "1s/python$/python${v}/g" ${f}${v}
+			sed -i -e "1s/3.[0-9]\+/${v}/g" ${f}${v}
+			sed -i -e "1s/.exe//g" ${f}${v}
+		done
+
+		# removing unversioned info
+		rm ${f}
+	done
+
+	# writing post install alternatives script
+	mkdir -p ${D}/etc/postinstall
+	pushd ${D}/etc/postinstall
+	for v in ${PYTHON_WHEEL_VERSIONS//:/ }
+	do
+		ver=$(echo ${v} | sed "s/\.//")
+		echo "# Install this package as a cython alternative.
+/usr/sbin/alternatives --install /usr/bin/cygdb cygdb /usr/bin/cygdb${v} ${ver}
+/usr/sbin/alternatives --install /usr/bin/cython cython /usr/bin/cython${v} ${ver}
+/usr/sbin/alternatives --install /usr/bin/cythonize cythonize /usr/bin/cythonize${v} ${ver}
+" > python${ver}-cython.sh
+	done
+
+	# writing pre remove alternatives script
+	mkdir -p ${D}/etc/preremove
+	pushd ${D}/etc/preremove
+	for v in ${PYTHON_WHEEL_VERSIONS//:/ }
+	do
+		ver=$(echo ${v} | sed "s/\.//")
+		echo "# Remove this package as a cython alternative.
+/usr/sbin/alternatives --remove cygdb /usr/bin/cygdb${v}
+/usr/sbin/alternatives --remove cython /usr/bin/cython${v}
+/usr/sbin/alternatives --remove cythonize /usr/bin/cythonize${v}
+" > python${ver}-cython.sh
+	done
+}
